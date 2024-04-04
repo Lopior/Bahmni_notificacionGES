@@ -58,7 +58,7 @@ try:
     # openmrscursor.execute(f"SELECT concept_id FROM {openmrsdb_name}.concept WHERE uuid = '{concept_uuid}';")
     
     # Consulta para obtener directamente el concept_id basado en el name
-    openmrscursor.execute(f"SELECT concept_id FROM {openmrsdb_name}.concept_name WHERE name = 'Coded Diagnosis';")
+    openmrscursor.execute(f"SELECT concept_id FROM {openmrsdb_name}.concept_name WHERE name = 'Coded Diagnosis' limit 1;")
 
     # Obtener el resultado de la consulta
     concept_id_result = openmrscursor.fetchone()
@@ -71,7 +71,7 @@ try:
         print(f"Concept ID encontrado: {concept_id}")
 
     else:
-        print(f"No se encontró un concepto con el UUID {concept_uuid}")
+        print("No se encontró un concepto con el name 'Coded Diagnosis'")
 
 except Exception as err:
     print(f"Error al ejecutar la consulta para obtener el concept_id: {err}")
