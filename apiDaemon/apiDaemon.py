@@ -45,14 +45,20 @@ obs_id_inicio = 0
 condition_id_inicio = 0
 
 # UUID del concepto que deseas buscar
-concept_uuid = os.getenv("CONCEPT_UUID_VAR")
+# concept_uuid = os.getenv("CONCEPT_UUID_VAR")
+
+# name del concepto que deseas buscar
+concept_name= os.getenv("CONCEPT_NAME_VAR")
 
 # Crear un cursor para ejecutar la consulta
 openmrscursor = openmrsdb.cursor()
 
 try:
     # Consulta para obtener directamente el concept_id basado en el UUID
-    openmrscursor.execute(f"SELECT concept_id FROM {openmrsdb_name}.concept WHERE uuid = '{concept_uuid}';")
+    # openmrscursor.execute(f"SELECT concept_id FROM {openmrsdb_name}.concept WHERE uuid = '{concept_uuid}';")
+    
+    # Consulta para obtener directamente el concept_id basado en el name
+    openmrscursor.execute(f"SELECT concept_id FROM {openmrsdb_name}.concept WHERE name = '{concept_name';")
 
     # Obtener el resultado de la consulta
     concept_id_result = openmrscursor.fetchone()
