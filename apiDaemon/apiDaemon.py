@@ -58,7 +58,7 @@ try:
     # openmrscursor.execute(f"SELECT concept_id FROM {openmrsdb_name}.concept WHERE uuid = '{concept_uuid}';")
     
     # Consulta para obtener directamente el concept_id basado en el name
-    openmrscursor.execute(f"SELECT concept_id FROM {openmrsdb_name}.concept WHERE name = 'Coded Diagnosis';")
+    openmrscursor.execute(f"SELECT concept_id FROM {openmrsdb_name}.concept_name WHERE name = 'Coded Diagnosis';")
 
     # Obtener el resultado de la consulta
     concept_id_result = openmrscursor.fetchone()
