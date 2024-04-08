@@ -45,14 +45,20 @@ obs_id_inicio = 0
 condition_id_inicio = 0
 
 # UUID del concepto que deseas buscar
-concept_uuid = os.getenv("CONCEPT_UUID_VAR")
+# concept_uuid = os.getenv("CONCEPT_UUID_VAR")
+
+# name del concepto que deseas buscar
+concept_name= os.getenv("CONCEPT_NAME_VAR")
 
 # Crear un cursor para ejecutar la consulta
 openmrscursor = openmrsdb.cursor()
 
 try:
     # Consulta para obtener directamente el concept_id basado en el UUID
-    openmrscursor.execute(f"SELECT concept_id FROM {openmrsdb_name}.concept WHERE uuid = '{concept_uuid}';")
+    # openmrscursor.execute(f"SELECT concept_id FROM {openmrsdb_name}.concept WHERE uuid = '{concept_uuid}';")
+    
+    # Consulta para obtener directamente el concept_id basado en el name
+    openmrscursor.execute(f"SELECT concept_id FROM {openmrsdb_name}.concept_name WHERE name = 'Coded Diagnosis' limit 1;")
 
     # Obtener el resultado de la consulta
     concept_id_result = openmrscursor.fetchone()
@@ -65,7 +71,7 @@ try:
         print(f"Concept ID encontrado: {concept_id}")
 
     else:
-        print(f"No se encontró un concepto con el UUID {concept_uuid}")
+        print("No se encontró un concepto con el name 'Coded Diagnosis'")
 
 except Exception as err:
     print(f"Error al ejecutar la consulta para obtener el concept_id: {err}")
@@ -157,49 +163,50 @@ while True:
             diag1 = cielConceptToGesApi.get_concept_details_q(diag_cod)
             print("*** detalle del diagnostico  por uuid ***")
             print(diag1)
-            if diag1[0].get('id') is not None:     
-                # Consulto por el detalle del diagnostico con id de ciel
-                diag2 = cielConceptToGesApi.get_concept_details(diag1[0]['id'])          
-                print("*** detalle del diagnostico ***")
-                print(diag2)
-                # Consulto si es posible ges con el codigo de cie10
-                # ges = cielConceptToGesApi.get_who_concept_details(icd10)
+            if(len(diag1) > 0):
+                if diag1[0].get('id') is not None:     
+                    # Consulto por el detalle del diagnostico con id de ciel
+                    diag2 = cielConceptToGesApi.get_concept_details(diag1[0]['id'])          
+                    print("*** detalle del diagnostico ***")
+                    print(diag2)
+                    # Consulto si es posible ges con el codigo de cie10
+                    # ges = cielConceptToGesApi.get_who_concept_details(icd10)
 
-                # Si la respuesta arroja algun ges
-                if diag2.get('ges_concept_id') is not None:
+                    # Si la respuesta arroja algun ges
+                    if diag2.get('ges_concept_id') is not None:
 
-                    print("es ges")
-                    # Consulto los detalles del ges
-                    # ges_name = cielConceptToGesApi.get_ges_concept_details(ges[0])
-                
-                    notificacionescursor = notificacionesdb.cursor()
-                    #openmrscursor2 = openmrsdb.cursor()
-                    agregar_posible_ges_query = ("INSERT INTO "+notificacionesdb_name+".notificacion_ges (obs_id, condition_id, nombre_establecimiento, direccion_establecimiento, ciudad_establecimiento, notificador_id, nombre_notificador, rut_notificador, nombre_paciente, rut_paciente, aseguradora_paciente, direccion_paciente, comuna_paciente, region_paciente, telefono_fijo_paciente, celular_paciente, email_paciente, cie10, diagnostico_ges, tipo, fechahora_notificacion, firma_notificador, firma_paciente, tipo_notificado, nombre_representante, rut_representante, telefono_fijo_representante, celular_representante, email_representante, fechahora_registro, fechahora_actualizacion, usuario_registro, usuario_actualizacion, estado)"
-                         " VALUES (%s, %s, 'Centro Medico y Dental Fundación', 'Amanda Labarca 70', 'Santiago', %s, %s, null, %s, %s, null, %s, %s, null, null, %s, %s, %s, %s, null, null, null, null, null, null, null, null, null, null, current_timestamp, null, %s, null, 'P')")
-                
-                    icd10 = diag2['icd10_who_concept_id']
-                    ges_name = diag2['display_name_ges']
-                    # Ejecutar la sentencia SQL
-                    #openmrscursor2.execute(agregar_posible_ges_query,(obs_id,condition_id,id_notificador,nombre_notificador,nombre_paciente,rut_paciente,direccion_paciente,comuna_paciente,celular_paciente,email_paciente,icd10,ges_name,usuario_registro))
-                    notificacionescursor.execute(agregar_posible_ges_query,(obs_id,condition_id,id_notificador,nombre_notificador,nombre_paciente,rut_paciente,direccion_paciente,comuna_paciente,celular_paciente,email_paciente,icd10,ges_name,usuario_registro))
+                        print("es ges")
+                        # Consulto los detalles del ges
+                        # ges_name = cielConceptToGesApi.get_ges_concept_details(ges[0])
+                    
+                        notificacionescursor = notificacionesdb.cursor()
+                        #openmrscursor2 = openmrsdb.cursor()
+                        agregar_posible_ges_query = ("INSERT INTO "+notificacionesdb_name+".notificacion_ges (obs_id, condition_id, nombre_establecimiento, direccion_establecimiento, ciudad_establecimiento, notificador_id, nombre_notificador, rut_notificador, nombre_paciente, rut_paciente, aseguradora_paciente, direccion_paciente, comuna_paciente, region_paciente, telefono_fijo_paciente, celular_paciente, email_paciente, cie10, diagnostico_ges, tipo, fechahora_notificacion, firma_notificador, firma_paciente, tipo_notificado, nombre_representante, rut_representante, telefono_fijo_representante, celular_representante, email_representante, fechahora_registro, fechahora_actualizacion, usuario_registro, usuario_actualizacion, estado)"
+                            " VALUES (%s, %s, 'Centro Medico y Dental Fundación', 'Amanda Labarca 70', 'Santiago', %s, %s, null, %s, %s, null, %s, %s, null, null, %s, %s, %s, %s, null, null, null, null, null, null, null, null, null, null, current_timestamp, null, %s, null, 'P')")
+                    
+                        icd10 = diag2['icd10_who_concept_id']
+                        ges_name = diag2['display_name_ges']
+                        # Ejecutar la sentencia SQL
+                        #openmrscursor2.execute(agregar_posible_ges_query,(obs_id,condition_id,id_notificador,nombre_notificador,nombre_paciente,rut_paciente,direccion_paciente,comuna_paciente,celular_paciente,email_paciente,icd10,ges_name,usuario_registro))
+                        notificacionescursor.execute(agregar_posible_ges_query,(obs_id,condition_id,id_notificador,nombre_notificador,nombre_paciente,rut_paciente,direccion_paciente,comuna_paciente,celular_paciente,email_paciente,icd10,ges_name,usuario_registro))
 
-                
-                    # Confirmar los cambios en la base de datos
-                    #openmrsdb.commit()
-                    #openmrscursor2.close()
-                    notificacionesdb.commit()
-                    notificacionescursor.close()
+                    
+                        # Confirmar los cambios en la base de datos
+                        #openmrsdb.commit()
+                        #openmrscursor2.close()
+                        notificacionesdb.commit()
+                        notificacionescursor.close()
 
+                    else:
+                        print("no era ges")
+                    if obs_id is not None:
+                        obs_id_inicio = obs_id
+                    if condition_id is not None:
+                        condition_id_inicio = condition_id
+                    print(obs_id_inicio)
                 else:
-                    print("no era ges")
-                if obs_id is not None:
-                    obs_id_inicio = obs_id
-                if condition_id is not None:
-                    condition_id_inicio = condition_id
-                print(obs_id_inicio)
-            else:
-                print("no encontro diagnostico")
-               
+                    print("no encontro diagnostico")
+                
         except Exception as err:
             print(f"Unexpected {err=}, {type(err)=}")
     
